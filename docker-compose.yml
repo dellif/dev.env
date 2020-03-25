@@ -1,0 +1,53 @@
+version: '3.7'
+
+#networks:
+#  backend:
+#    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  redis:
+    driver: ${VOLUMES_DRIVER}
+  mysql:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+
+## php7.2  #########################################
+    php-fpm-7.2:
+      image: "donglf681/php:7.2-fpm-alpine3.11"
+      network_mode: "host"
+      volumes:
+        - ${APP_CODE_PATH_HOST}:/var/www:rw
+
+  ## NGINX Server #########################################
+    nginx:
+      image: "donglf681/nginx:1.17-alpine"
+      volumes:
+      - ${APP_CODE_PATH_HOST}:/var/www
+      - ${APP_CODE_PATH_HOST}/dev.env/nginx/logs:/var/log/nginx:rw
+      - ${APP_CODE_PATH_HOST}/dev.env/nginx/vhost:/etc/nginx/vhost
+      ports:
+      - "80:80"
+      - "443:443"
+      depends_on:
+        - php-fpm-7.2
+      network_mode: "host"
+
+  ### Redis ################################################
+    redis:
+      image: "donglf681/redis:5.0.8-alpine3.11"
+      volumes:
+      - redis:/data
+      ports:
+       - "6379:6379"
+      network_mode: "host"
+#      networks:
+#       - backend
+
+  ### phpcs ################################################
+    phpcs:
+      image: "phpcs:latest"
+      tty: true
+      container_name: "phpcs"
+      volumes:
+      - /tmp:/tmp
