@@ -45,9 +45,9 @@ services:
 #       - backend
 
   ### phpcs ################################################
-    phpcs:
-      image: "phpcs:latest"
-      tty: true
-      container_name: "phpcs"
-      volumes:
-      - /tmp:/tmp
+#    phpcs:
+#      image: "phpcs:latest"
+#      tty: true
+#      container_name: "phpcs"
+#      volumes:
+#      - /tmp:/tmp
