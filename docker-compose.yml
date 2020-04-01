@@ -14,7 +14,9 @@ services:
 
 ## php7.2  #########################################
     php-fpm-7.2:
-      image: "donglf681/php:7.2-fpm-alpine3.11"
+#      image: "donglf681/php:7.2-fpm-alpine3.11"
+      image: "donglf681/php-fpm:7.2-alpine"
+#      image: "trrtly/php-fpm:7.2-alpine"
       network_mode: "host"
       volumes:
         - ${APP_CODE_PATH_HOST}:/var/www:rw
@@ -45,9 +47,24 @@ services:
 #       - backend
 
   ### phpcs ################################################
-#    phpcs:
-#      image: "phpcs:latest"
-#      tty: true
-#      container_name: "phpcs"
-#      volumes:
-#      - /tmp:/tmp
+    phpcs:
+      image: "phpcs:latest"
+      tty: true
+      container_name: "phpcs"
+      volumes:
+      - /tmp:/tmp
+
+  ### MySQL ################################################
+    mysql:
+      image: "donglf681/mysql:5.7"
+      environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${WORKSPACE_TIMEZONE}
+      volumes:
+      - mysql:/var/lib/mysql
+      - ${APP_CODE_PATH_HOST}:/var/www
+      ports:
+      - "${MYSQL_PORT}:3306"
+      network_mode: "host"
+#      networks:
+#        - backend
