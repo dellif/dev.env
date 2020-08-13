@@ -11,60 +11,69 @@ volumes:
     driver: ${VOLUMES_DRIVER}
 
 services:
-
   ### php7.2  #########################################
   php-fpm-7.2:
     #      image: "donglf681/php:7.2-fpm-alpine3.11"
-    image: "donglf681/php-fpm:7.2-alpine"
+    image: 'donglf681/php-fpm:7.2-alpine'
     #      image: "trrtly/php-fpm:7.2-alpine"
-    network_mode: "host"
+    network_mode: 'host'
     volumes:
       - ${APP_CODE_PATH_HOST}:/var/www:rw
 
   ### php7.2-cli  #########################################
-  swoft-2.x:
-    image: "donglf681/php-cli:7.2-alpine"
-    network_mode: "host"
+  swoft:
+    image: 'donglf681/php-cli:7.2-alpine'
+    network_mode: 'host'
     volumes:
       - ${APP_CODE_PATH_HOST}/swoft:/var/www:rw
-    command: "php bin/swoft http:start"
+    ports:
+      - '18306:18306'
+    command: 'php bin/swoft http:start'
 
   ### NGINX Server #########################################
   nginx:
-    image: "donglf681/nginx:1.17-alpine"
+    image: 'donglf681/nginx:1.17-alpine'
     volumes:
       - ${APP_CODE_PATH_HOST}:/var/www
       - ${APP_CODE_PATH_HOST}/dev.env/nginx/logs:/var/log/nginx:rw
       - ${APP_CODE_PATH_HOST}/dev.env/nginx/vhost:/etc/nginx/vhost
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - php-fpm-7.2
-    network_mode: "host"
+    network_mode: 'host'
 
   ### Redis ################################################
   redis:
-    image: "donglf681/redis:5.0.8-alpine3.11"
+    image: 'donglf681/redis:5.0.8-alpine3.11'
     volumes:
       - redis:/data
     ports:
-      - "6379:6379"
-    network_mode: "host"
+      - '6379:6379'
+    network_mode: 'host'
   #      networks:
   #       - backend
 
   ### phpcs ################################################
   phpcs:
-    image: "phpcs:latest"
+    image: 'donglf681/phpcs:3.5.6'
     tty: true
-    container_name: "phpcs"
+    container_name: 'phpcs'
+    volumes:
+      - /tmp:/tmp
+
+  ### phpcbf ################################################
+  phpcbf:
+    image: 'donglf681/phpcbf:3.5.6'
+    tty: true
+    container_name: 'phpcbf'
     volumes:
       - /tmp:/tmp
 
   ### MySQL ################################################
   mysql:
-    image: "donglf681/mysql:5.7"
+    image: 'donglf681/mysql:5.7'
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - TZ=${WORKSPACE_TIMEZONE}
@@ -72,7 +81,17 @@ services:
       - mysql:/var/lib/mysql
       - ${APP_CODE_PATH_HOST}:/var/www
     ports:
-      - "${MYSQL_PORT}:3306"
+      - '${MYSQL_PORT}:3306'
     #      network_mode: "host"
     networks:
       - backend
+
+  ### php7.2-cli  #########################################
+  eadmin:
+    image: 'donglf681/php-cli:7.2-alpine-v2'
+    network_mode: 'host'
+    volumes:
+      - ${APP_CODE_PATH_HOST}/eadmin:/var/www:rw
+    ports:
+      - '9511:9501'
+    command: 'php bin/hyperf.php start'
