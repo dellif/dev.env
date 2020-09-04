@@ -6,7 +6,7 @@ server {
     listen 80;
     server_name eadmin.com; # 设置自己的 domain
     index index.html;
-    root /var/www/eadmin/dist;
+    root /var/www/hyperf-skeleton/dist;
     access_log /var/log/nginx/eadmin.access.log;
     error_log /var/log/nginx/eadmin.error.log;
 

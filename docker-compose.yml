@@ -51,9 +51,9 @@ services:
       - redis:/data
     ports:
       - '6379:6379'
-    network_mode: 'host'
-  #      networks:
-  #       - backend
+    # network_mode: 'host'
+    networks:
+      - backend
 
   ### phpcs ################################################
   phpcs:
@@ -72,7 +72,7 @@ services:
       - /tmp:/tmp
 
   ### MySQL ################################################
-  mysql:
+  mysql-5.7:
     image: 'donglf681/mysql:5.7'
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -87,11 +87,16 @@ services:
       - backend
 
   ### php7.2-cli  #########################################
-  eadmin:
-    image: 'donglf681/php-cli:7.2-alpine-v2'
-    network_mode: 'host'
+  hyperf:
+    #image: 'donglf681/php-cli:7.2-alpine-v2'
+    image: 'donglf681/php-cli:7.2-alpine-v3'
+    # network_mode: 'host'
+    networks:
+      - backend
     volumes:
-      - ${APP_CODE_PATH_HOST}/eadmin:/var/www:rw
+      - ${APP_CODE_PATH_HOST}/eadmin/api:/var/www:rw
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
     ports:
       - '9511:9501'
     command: 'php bin/hyperf.php start'
