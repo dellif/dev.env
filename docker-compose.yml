@@ -15,7 +15,6 @@ services:
   php-fpm-7.2:
     #      image: "donglf681/php:7.2-fpm-alpine3.11"
     image: 'donglf681/php-fpm:7.2-alpine'
-    #      image: "trrtly/php-fpm:7.2-alpine"
     network_mode: 'host'
     volumes:
       - ${APP_CODE_PATH_HOST}:/var/www:rw
@@ -62,6 +61,7 @@ services:
     container_name: 'phpcs'
     volumes:
       - /tmp:/tmp
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_HOST}:rw
 
   ### phpcbf ################################################
   phpcbf:
@@ -70,6 +70,7 @@ services:
     container_name: 'phpcbf'
     volumes:
       - /tmp:/tmp
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_HOST}:rw
 
   ### MySQL ################################################
   mysql-5.7:
@@ -88,8 +89,7 @@ services:
 
   ### php7.2-cli  #########################################
   hyperf:
-    #image: 'donglf681/php-cli:7.2-alpine-v2'
-    image: 'donglf681/php-cli:7.2-alpine-v3'
+    image: 'donglf681/php-cli:7.2-alpine-v2'
     # network_mode: 'host'
     networks:
       - backend
