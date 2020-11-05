@@ -2,3 +2,4 @@
 logs/
 nginx/logs/
 /nginx/vhost/qyt.me.conf
+.history
