@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
   backend:
@@ -81,12 +81,12 @@ services:
       - TZ=${WORKSPACE_TIMEZONE}
     volumes:
       - mysql:/var/lib/mysql
-      - ${APP_CODE_PATH_HOST}:/var/www
+      - ${APP_CODE_PATH_HOST}:/var/www:rw
     ports:
       - '${MYSQL_PORT}:3306'
-    #      network_mode: "host"
-    networks:
-      - backend
+    network_mode: 'host'
+    # networks:
+    #   - backend
 
   ### php7.2-cli  #########################################
   hyperf:
@@ -102,8 +102,8 @@ services:
       - '9511:9501'
     command: 'php bin/hyperf.php start'
 
-    ### jdk:1.8.0_202-alpine3.12  #########################################
-  jdk:
+  ### jdk:1.8.0_202-alpine3.12#########################################
+  anxinqian:
     image: 'donglf681/jdk:1.8.0-alpine3.12'
     network_mode: 'host'
     # networks:
@@ -113,3 +113,19 @@ services:
     ports:
       - '1234:1234'
     command: 'java -jar AnxinSign.jar'
+
+  ### jdk:1.8.0_202-alpine3.12 tomcat6.0 #########################################
+  tomcat:
+    # image: 'donglf681/jdk:1.8.0-alpine3.12'
+    image: 'donglf681/tomcat:6.0-alpine3.12'
+    network_mode: 'host'
+    # networks:
+    #   - backend
+    volumes:
+      - ./tomcat/sealConfig:/usr/local/apache-tomcat-6.0.32/bin/sealConfig:rw
+      - ./tomcat/webapps/Seal.war:/usr/local/apache-tomcat-6.0.32/webapps/Seal.war:rw
+      - ./tomcat/logs:/usr/local/apache-tomcat-6.0.32/logs:rw
+      - ${APP_CODE_PATH_HOST}:/var/www:rw
+    ports:
+      - '8080:8080'
+    command: 'catalina.sh run'
